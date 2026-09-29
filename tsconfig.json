@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "sentinel-pay-observability-console"]
+  "exclude": ["node_modules"]
 }
