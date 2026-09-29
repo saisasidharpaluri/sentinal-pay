@@ -1,10 +1,9 @@
-import { TransactionRecord, PaymentRequest, GuardrailEvaluation, RazorpayOrder } from './types';
+import { TransactionRecord } from './types';
 import { recordSettledTransaction, decrementPendingCount } from './guardrails';
 import { createRazorpayOrder, captureMockPayment } from './razorpay';
 
 // Global singleton in-memory store for server runtime (preserves state during hot reload)
 declare global {
-  // eslint-disable-next-line no-var
   var __sentinelStore: {
     transactions: TransactionRecord[];
   } | undefined;

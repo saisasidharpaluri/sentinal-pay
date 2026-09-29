@@ -178,7 +178,6 @@ export function evaluateGuardrails(req: PaymentRequest): GuardrailEvaluation {
   // CHECK 3: Single Transaction Amount Limits (Hard & Soft)
   // ----------------------------------------------------
   const amount = req.amount;
-  let amountPassed = true;
 
   if (amount <= 0 || isNaN(amount)) {
     calculatedRiskScore += 70;
@@ -190,7 +189,6 @@ export function evaluateGuardrails(req: PaymentRequest): GuardrailEvaluation {
       scoreImpact: 70,
       message: 'Invalid non-positive transaction value requested.',
     });
-    amountPassed = false;
   } else if (amount > config.hardSingleTxnLimit) {
     calculatedRiskScore += 90;
     violations.push(`Hard Cap Exceeded: Requested ₹${amount.toLocaleString()} exceeds hard threshold of ₹${config.hardSingleTxnLimit.toLocaleString()}.`);
@@ -201,7 +199,6 @@ export function evaluateGuardrails(req: PaymentRequest): GuardrailEvaluation {
       scoreImpact: 90,
       message: `Transaction exceeds autonomous hard ceiling of ₹${config.hardSingleTxnLimit.toLocaleString()}. Immediate block.`,
     });
-    amountPassed = false;
   } else if (amount > config.softSingleTxnLimit) {
     calculatedRiskScore += 45;
     violations.push(`Soft Tier Flag: Amount ₹${amount.toLocaleString()} exceeds autonomous limit of ₹${config.softSingleTxnLimit.toLocaleString()}. Requires Human-in-the-Loop review.`);
@@ -212,7 +209,6 @@ export function evaluateGuardrails(req: PaymentRequest): GuardrailEvaluation {
       scoreImpact: 45,
       message: `Amount exceeds autonomous approval tier (₹${config.softSingleTxnLimit.toLocaleString()}). Requires authorized operator sign-off.`,
     });
-    amountPassed = false;
   } else {
     // Normal safe transaction amount
     calculatedRiskScore += 5;
