@@ -17,13 +17,15 @@ export const paymentInputSchema = z.object({
 export type PaymentExecutionParams = z.infer<typeof paymentInputSchema>;
 
 export interface PaymentToolResult {
-  status: 'APPROVED' | 'FLAGGED_FOR_HUMAN_APPROVAL' | 'BLOCKED';
+  status: 'APPROVED' | 'AWAITING_HUMAN_CONFIRMATION' | 'POLICY_REJECTED' | 'FLAGGED_FOR_HUMAN_APPROVAL' | 'BLOCKED';
   riskScore: number;
   violations?: string[];
   explanation: string;
   checks: GuardrailCheckResult[];
   recordId: string;
-  orderId?: string;
+  orderId: string;
+  amountInr: number;
+  mode: string;
   paymentId?: string;
   receipt?: string;
   amount?: number;
@@ -58,7 +60,7 @@ export async function executeAgentPayment(params: PaymentExecutionParams): Promi
   // 1. Evaluate deterministic guardrails
   const evaluation = evaluateGuardrails(paymentRequest);
 
-  // 2. Handle BLOCKED state
+  // 2. Handle BLOCKED state (POLICY_REJECTED)
   if (evaluation.status === 'BLOCKED') {
     const record = addTransaction({
       id: reqId,
@@ -68,18 +70,22 @@ export async function executeAgentPayment(params: PaymentExecutionParams): Promi
       status: 'BLOCKED',
     });
     return {
-      status: 'BLOCKED',
+      status: 'POLICY_REJECTED',
       riskScore: evaluation.riskScore,
       violations: evaluation.policyViolations,
       explanation: evaluation.explanation,
       checks: evaluation.checks,
       recordId: record.id,
-      message: `[SENTINEL GATEWAY REJECTION] Transaction BLOCKED. Risk Score: ${evaluation.riskScore}/100. Violations: ${evaluation.policyViolations.join('; ')}`,
+      orderId: `order_blocked_${Math.random().toString(36).substring(2, 8)}`,
+      amountInr: params.amount,
+      mode: 'Deterministic Rule Intercept',
+      message: `[DETERMINISTIC POLICY INTERCEPT] Transaction BLOCKED. Risk Score: ${evaluation.riskScore}/100. Violations: ${evaluation.policyViolations.join('; ')}`,
     };
   }
 
-  // 3. Handle FLAGGED_FOR_HUMAN_APPROVAL state (HITL)
+  // 3. Handle FLAGGED_FOR_HUMAN_APPROVAL state (AWAITING_HUMAN_CONFIRMATION)
   if (evaluation.status === 'FLAGGED_FOR_HUMAN_APPROVAL') {
+    const orderDraftId = `order_hitl_${Math.random().toString(36).substring(2, 8)}`;
     const record = addTransaction({
       id: reqId,
       timestamp,
@@ -88,14 +94,17 @@ export async function executeAgentPayment(params: PaymentExecutionParams): Promi
       status: 'PENDING_APPROVAL',
     });
     return {
-      status: 'FLAGGED_FOR_HUMAN_APPROVAL',
+      status: 'AWAITING_HUMAN_CONFIRMATION',
       riskScore: evaluation.riskScore,
       requestId: reqId,
+      orderId: orderDraftId,
+      amountInr: params.amount,
+      mode: 'Threshold Exceeded (> ₹10k)',
       requiresHumanReview: true,
       recordId: record.id,
       explanation: evaluation.explanation,
       checks: evaluation.checks,
-      message: `[SENTINEL HITL REQUIRED] Payment of ₹${params.amount.toLocaleString()} to ${params.recipient} flagged for Human-in-the-Loop review. Authorization token ${reqId} dispatched to Operator Queue.`,
+      message: `Single transaction of ₹${params.amount.toLocaleString()} exceeds autonomous soft-cap threshold (₹10,000). Razorpay test order generated but settlement held for operator signature.`,
     };
   }
 
@@ -129,13 +138,15 @@ export async function executeAgentPayment(params: PaymentExecutionParams): Promi
     paymentId: paymentResult.paymentId,
     receipt: razorpayOrder.receipt,
     amount: razorpayOrder.amount / 100, // INR
+    amountInr: params.amount,
     amountPaise: razorpayOrder.amount,
     currency: razorpayOrder.currency,
     signature: paymentResult.signature,
     recordId: record.id,
+    mode: 'Autonomous Clearance',
     explanation: evaluation.explanation,
     checks: evaluation.checks,
-    message: `[SENTINEL PAYMENT CLEARED] Successfully created and settled Razorpay Order ${razorpayOrder.id} for ₹${params.amount.toLocaleString()} to ${params.recipient}. Receipt: ${razorpayOrder.receipt}`,
+    message: `[DETERMINISTIC CLEARANCE • SETTLED] Successfully created and settled Razorpay Order ${razorpayOrder.id} for ₹${params.amount.toLocaleString()} to ${params.recipient}. Receipt: ${razorpayOrder.receipt}`,
   };
 }
 
@@ -170,10 +181,11 @@ function extractPaymentIntent(prompt: string): PaymentExecutionParams {
   else if (/anthropic/i.test(prompt)) recipient = 'Anthropic PBC';
   else if (/openai/i.test(prompt)) recipient = 'OpenAI LLC';
   else if (/server farm|hosting|cloud/i.test(prompt)) recipient = 'Cloud Hosting Infrastructure Inc';
-  else if (/offshore|untracked|darknet|anonymous/i.test(prompt)) recipient = 'Untracked Offshore Wallet';
+  else if (/offshore|untracked|darknet|anonymous|external wallet/i.test(prompt)) recipient = 'Untracked Offshore Wallet';
   else if (/google|gcp/i.test(prompt)) recipient = 'Google Cloud Platform';
   else if (/vercel/i.test(prompt)) recipient = 'Vercel Inc';
   else if (/github/i.test(prompt)) recipient = 'GitHub Inc';
+  else if (/cloudflare/i.test(prompt)) recipient = 'Cloudflare Inc';
   else {
     const toMatch = prompt.match(/(?:to|for|vendor|recipient)\s+([A-Za-z0-9\s&]{2,30})/i);
     if (toMatch && toMatch[1]) {
@@ -182,10 +194,10 @@ function extractPaymentIntent(prompt: string): PaymentExecutionParams {
   }
 
   let category = 'Cloud Compute';
-  if (/api|tokens|inference|anthropic|openai/i.test(prompt)) category = 'API Credits';
-  else if (/storage|s3|server|cluster|database/i.test(prompt)) category = 'Cloud Compute';
+  if (/api|tokens|inference|anthropic|openai|claude/i.test(prompt)) category = 'API Credits';
+  else if (/storage|s3|server|cluster|database|cdn/i.test(prompt)) category = 'Cloud Compute';
   else if (/subscription|saas|license|monthly/i.test(prompt)) category = 'SaaS Subscription';
-  else if (/contractor|freelance|consultant/i.test(prompt)) category = 'Contractor';
+  else if (/contractor|freelance|consultant|micro-task/i.test(prompt)) category = 'Contractor';
   else if (/supplies|hardware|office/i.test(prompt)) category = 'Office Supplies';
 
   let urgency: 'low' | 'medium' | 'high' | 'critical' = 'medium';
@@ -234,8 +246,8 @@ export async function POST(req: Request) {
     let agentResponse = '';
     if (toolResult.status === 'APPROVED') {
       agentResponse = `Autonomous procurement complete. Sentinel-Pay verified that this payment of ₹${paymentIntent.amount.toLocaleString()} to ${paymentIntent.recipient} satisfies all velocity and safety criteria (Risk Score: ${toolResult.riskScore}/100). Razorpay Order ID \`${toolResult.orderId}\` generated and settled under receipt \`${toolResult.receipt}\`.`;
-    } else if (toolResult.status === 'FLAGGED_FOR_HUMAN_APPROVAL') {
-      agentResponse = `Payment of ₹${paymentIntent.amount.toLocaleString()} exceeds the autonomous execution limit (₹10,000 threshold). Sentinel-Pay has placed the order in the Human-in-the-Loop review queue under Token \`${toolResult.requestId}\`. I will wait for human operator authorization before settlement proceeds.`;
+    } else if (toolResult.status === 'AWAITING_HUMAN_CONFIRMATION') {
+      agentResponse = `Payment of ₹${paymentIntent.amount.toLocaleString()} exceeds the autonomous execution limit (₹10,000 threshold). Sentinel-Pay has placed the order in the Human-in-the-Loop review queue under Token \`${toolResult.orderId}\`. Awaiting operator signature before settlement proceeds.`;
     } else {
       agentResponse = `ACTION BLOCKED: Sentinel-Pay security policies rejected the payment attempt to "${paymentIntent.recipient}". High risk detected (${toolResult.riskScore}/100). Guardrail violations: ${toolResult.violations?.join(', ')}.`;
     }
