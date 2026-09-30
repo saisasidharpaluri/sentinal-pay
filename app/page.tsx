@@ -38,7 +38,7 @@ export default function HomePage() {
         <nav className="landing-links" aria-label="Main navigation">
           <a href="#how-it-works">How it works</a>
           <a href="#controls">Controls</a>
-          <span className="test-rail-label"><span /> Razorpay test rails</span>
+          <span className="test-rail-label"><span /> Simulated Razorpay test rails</span>
           <Link className="button button-dark button-small" href="/console">Launch live demo <ArrowRight size={15} /></Link>
         </nav>
       </header>
@@ -70,7 +70,7 @@ export default function HomePage() {
             <div className="policy-row"><span className="policy-check"><Check size={12} /></span><span>Intent is low risk</span><small>PASS</small></div>
           </div>
           <div className="pipeline-line pipeline-line-last"><span /></div>
-          <div className="settlement-card"><span className="settlement-icon"><Check size={15} /></span><div><strong>Approved for settlement</strong><small>Razorpay test order created</small></div><span className="settlement-tag">SAFE</span></div>
+          <div className="settlement-card"><span className="settlement-icon"><Check size={15} /></span><div><strong>Approved for settlement</strong><small>Simulated Razorpay-format order</small></div><span className="settlement-tag">SAFE</span></div>
           <div className="visual-footnote"><LockKeyhole size={12} /> Deterministic policy. Auditable outcome.</div>
           <div className="floating-stat"><span className="floating-stat-icon"><Radar size={17} /></span><span><strong>6</strong><small>policy checks</small></span><span className="stat-status">ALL CLEAR</span></div>
         </div>
@@ -105,7 +105,7 @@ export default function HomePage() {
         <div className="cta-spark"><Sparkles size={20} /></div><div><span className="section-kicker">SEE THE GUARDRAILS IN ACTION</span><h2>One console. Four real scenarios.</h2><p>Try an approved payment, a human-review hold, a velocity burst, or a malicious request.</p></div><Link className="button button-primary" href="/console">Launch interactive demo <ArrowRight size={16} /></Link>
       </section>
 
-      <footer className="landing-footer"><Link className="brand-lockup" href="/"><span className="brand-mark"><Zap size={15} fill="currentColor" /></span><span className="brand-name">sentinel<span>pay</span></span></Link><p>Autonomous intent. Deterministic control.</p><span className="footer-disclosure">Demo uses simulated Razorpay test rails. No live payments are processed.</span></footer>
+      <footer className="landing-footer"><Link className="brand-lockup" href="/"><span className="brand-mark"><Zap size={15} fill="currentColor" /></span><span className="brand-name">sentinel<span>pay</span></span></Link><p>Autonomous intent. Deterministic control.</p><span className="footer-disclosure">Independent demo using simulated Razorpay-format test rails. No live payments are processed or endorsed by Razorpay.</span></footer>
     </main>
   );
 }

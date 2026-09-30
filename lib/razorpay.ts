@@ -59,12 +59,6 @@ export async function createRazorpayOrder(params: CreateOrderParams): Promise<Ra
   const receiptId = params.receipt || generateRazorpayId('rcpt_');
   const createdAtEpoch = Math.floor(Date.now() / 1000);
 
-  // If real RAZORPAY keys are configured in environment variables, log integration awareness
-  const hasRealKeys = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
-  if (hasRealKeys) {
-    // Note: Can integrate with 'razorpay' npm SDK if keys exist, while preserving flawless mock fallback
-  }
-
   const mockPaymentId = generateRazorpayId('pay_');
   const mockSignature = generateRazorpaySignature(orderId, mockPaymentId);
 

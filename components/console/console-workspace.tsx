@@ -15,7 +15,7 @@ import {
 } from '@/lib/frontend-api';
 
 type Snapshot = { transactions: TransactionRecord[]; pending: TransactionRecord[]; stats: VelocityStats; config: VelocityConfig };
-type ActivityRun = { id: string; prompt: string; recipient: string; thoughts: string[]; response: string; result: PaymentExecutionResult; createdAt: string };
+type ActivityRun = { id: string; prompt: string; recipient: string; thoughts: string[]; response: string; intentSource: 'AI_MODEL' | 'DETERMINISTIC_FALLBACK' | 'EXPLICIT_PARAMETERS'; intentModel?: string; intentSummary: string; result: PaymentExecutionResult; createdAt: string };
 type BusyAction = 'refresh' | 'payment' | 'scenario' | 'reset' | string | null;
 
 const presets = [
@@ -71,8 +71,9 @@ function ActivityRunCard({ run }: { run: ActivityRun }) {
     <div className="run-card-heading"><span className="run-icon"><Icon size={17} /></span><div className="run-heading-copy"><span className="run-kind">PAYMENT REQUEST · {formatTime(run.createdAt)}</span><strong>{formatInr(run.result.amountInr)} to {run.recipient}</strong></div><span className={`result-tag ${tone}`}>{resultLabel(run.result.status)}</span></div>
     <p className="run-prompt">{run.prompt}</p>
     <div className="run-outcome"><strong>{run.result.explanation}</strong><span>Risk score <b>{run.result.riskScore}/100</b></span></div>
+    <div className="decision-intent"><span className={`intent-source ${run.intentSource === 'AI_MODEL' ? 'ai' : 'fallback'}`}><Sparkles size={12} />{run.intentSource === 'AI_MODEL' ? `AI parsed${run.intentModel ? ` · ${run.intentModel}` : ''}` : run.intentSource === 'EXPLICIT_PARAMETERS' ? 'Scenario parameters' : 'Fallback parser'}</span><span>{run.intentSummary}</span></div>
     <GuardrailCheckList checks={run.result.checks} />
-    <details className="run-details"><summary><Terminal size={13} /> Agent execution trace <ChevronDown size={13} /></summary><div className="trace-lines">{run.thoughts.map((thought, index) => <p key={`${index}-${thought}`}>{thought}</p>)}<p className="trace-final">{run.response}</p></div></details>
+    <details className="run-details"><summary><Terminal size={13} /> Decision trace <ChevronDown size={13} /></summary><div className="trace-lines">{run.thoughts.map((thought, index) => <p key={`${index}-${thought}`}>{thought}</p>)}<p className="trace-final">{run.response}</p><p className="trace-disclosure">This trace reports extracted fields and policy outcomes; it does not expose private model reasoning.</p></div></details>
     {run.result.violations?.length ? <div className="violation-list"><ShieldAlert size={14} />{run.result.violations.join(' · ')}</div> : null}
   </article>;
 }
@@ -121,8 +122,11 @@ export default function ConsoleWorkspace() {
       id: result.recordId,
       prompt: nextPrompt,
       recipient: response.toolCall.parameters.recipient,
-      thoughts: response.agentThoughts,
+      thoughts: response.decisionTrace,
       response: response.agentResponse,
+      intentSource: response.intentSource,
+      intentModel: response.intentModel,
+      intentSummary: response.intentSummary,
       result,
       createdAt: new Date().toISOString(),
     }, ...current].slice(0, 6));
@@ -223,7 +227,7 @@ export default function ConsoleWorkspace() {
       <div className="console-main-grid">
         <section className="workspace-card execution-panel">
           <div className="panel-header"><div className="panel-title-icon"><Terminal size={16} /></div><div><span className="section-kicker">EXECUTION & POLICY</span><h2>Agent activity</h2></div><span className="panel-count">{runs.length + timeline.length} EVENTS</span></div>
-          <form className="prompt-composer" onSubmit={handlePromptSubmit}><label htmlFor="agent-prompt">Payment instruction</label><div className="prompt-input-wrap"><Command size={16} /><input id="agent-prompt" value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="e.g. Pay ₹1,850 to AWS for backup storage" disabled={busy !== null} /><button className="send-button" type="submit" disabled={busy !== null || !prompt.trim()} aria-label="Submit payment instruction">{busy === 'payment' ? <LoaderCircle size={16} className="spin" /> : <Send size={15} />}</button></div><span className="composer-note">The deterministic policy engine evaluates every request before settlement.</span></form>
+          <form className="prompt-composer" onSubmit={handlePromptSubmit}><label htmlFor="agent-prompt">Payment instruction</label><div className="prompt-input-wrap"><Command size={16} /><input id="agent-prompt" value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="e.g. Pay ₹1,850 to AWS for backup storage" disabled={busy !== null} /><button className="send-button" type="submit" disabled={busy !== null || !prompt.trim()} aria-label="Submit payment instruction">{busy === 'payment' ? <LoaderCircle size={16} className="spin" /> : <Send size={15} />}</button></div><span className="composer-note">AI extracts intent when configured. Deterministic guardrails always decide whether a payment proceeds.</span></form>
           {busy === 'scenario' && <div className="processing-banner"><LoaderCircle size={14} className="spin" /> Running scenario through the guardrail pipeline…</div>}
           {busy === 'payment' && <div className="processing-banner"><LoaderCircle size={14} className="spin" /> Evaluating request and contacting the test rail…</div>}
           <div className="activity-content">

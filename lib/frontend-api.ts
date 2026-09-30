@@ -29,8 +29,12 @@ export interface PaymentExecutionResult {
 
 export interface ChatResponse {
   success: boolean;
-  agentThoughts: string[];
+  decisionTrace: string[];
   agentResponse: string;
+  intentSource: 'AI_MODEL' | 'DETERMINISTIC_FALLBACK' | 'EXPLICIT_PARAMETERS';
+  intentModel?: string;
+  intentSummary: string;
+  fallbackNote?: string;
   toolCall: {
     name: string;
     parameters: {

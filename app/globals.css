@@ -241,6 +241,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .run-outcome > strong { color: #536b7b; font-size: 8px; font-weight: 550; line-height: 1.55; }
 .run-outcome > span { flex: 0 0 auto; color: #84939f; font-size: 8px; }
 .run-outcome b { color: #30566a; font-family: var(--font-geist-mono), monospace; }
+.decision-intent { display: flex; align-items: flex-start; gap: 8px; margin-top: 7px; padding: 8px 9px; border: 1px solid #e8eef0; border-radius: 6px; color: #6b7e8c; background: #fbfcfd; font-size: 8px; line-height: 1.5; }
+.intent-source { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 4px; font-size: 7px; font-weight: 700; letter-spacing: .025em; }
+.intent-source.ai { color: #247f70; }
+.intent-source.fallback { color: #9b742e; }
+.trace-disclosure { padding-top: 5px; border-top: 1px solid #e6edef; color: #97a3aa !important; font-family: inherit !important; }
 .check-list { display: grid; gap: 0; margin-top: 8px; }
 .check-row { display: grid; grid-template-columns: 17px 1fr minmax(0, 1.5fr) 37px; gap: 6px; align-items: center; min-height: 27px; border-bottom: 1px solid #f0f3f4; }
 .check-row:last-child { border-bottom: 0; }
