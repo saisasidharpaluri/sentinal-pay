@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #030712;
-  --foreground: #f8fafc;
+  color-scheme: dark;
+  --background: #080d18;
+  --foreground: #edf3fb;
+  --surface: #101a2a;
+  --surface-raised: #142135;
+  --line: rgba(167, 190, 220, .12);
+  --muted: #8493aa;
+  --accent: #61e2cf;
 }
 
 @theme inline {
@@ -12,69 +18,137 @@
   --font-mono: var(--font-geist-mono);
 }
 
+* { box-sizing: border-box; }
+html { min-height: 100%; background: var(--background); }
 body {
-  background-color: #030712;
-  color: #f8fafc;
+  min-height: 100vh;
+  margin: 0;
   overflow-x: hidden;
+  background:
+    radial-gradient(ellipse at 16% -8%, rgba(24, 105, 117, .19), transparent 38rem),
+    radial-gradient(ellipse at 98% 16%, rgba(45, 73, 139, .15), transparent 36rem),
+    var(--background);
+  color: var(--foreground);
 }
 
-/* Cybernetic Grid & Ambient Background */
-.bg-grid-pattern {
-  background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+.sentinel-dashboard { min-height: 100vh; background: transparent !important; }
+.dashboard-header {
+  height: 76px;
+  padding-inline: clamp(20px, 3.4vw, 56px);
+  border-color: var(--line) !important;
+  background: rgba(8, 13, 24, .84) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.025);
 }
-
-.ambient-glow {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(120px);
-  pointer-events: none;
-  opacity: 0.15;
+.dashboard-header > div:first-child > div:first-child {
+  width: 40px; height: 40px; border-radius: 13px !important;
+  background: linear-gradient(145deg, #8cf4df, #35bba9) !important;
+  box-shadow: 0 8px 24px rgba(54, 211, 190, .2) !important;
 }
-
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.dashboard-header p:first-child { letter-spacing: .06em; }
+.dashboard-header p:last-child { margin-top: 3px; letter-spacing: .16em; }
+.preset-bar {
+  padding: 15px clamp(20px, 3.4vw, 56px);
+  border-color: var(--line) !important;
+  background: rgba(14, 22, 36, .72) !important;
 }
-
-::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+.preset-bar button {
+  min-height: 42px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border-color: var(--line) !important;
+  background: rgba(255,255,255,.035) !important;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
 }
-
-::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.8);
-  border-radius: 9999px;
+.preset-bar button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,.07) !important;
+  border-color: rgba(97,226,207,.42) !important;
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.9);
+.workspace-grid {
+  max-width: 1800px;
+  margin-inline: auto;
+  padding: 20px clamp(14px, 2.2vw, 34px) 30px;
+  gap: 18px;
+  min-height: calc(100vh - 122px) !important;
+  grid-template-columns: minmax(0, 1.16fr) minmax(410px, .84fr) !important;
 }
-
-/* Glassmorphic Cards */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.stream-panel, .telemetry-panel {
+  min-height: calc(100vh - 164px) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 18px;
+  background: rgba(14, 22, 36, .83) !important;
+  box-shadow: 0 18px 60px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.025);
 }
-
-.glass-panel-elevated {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+.stream-panel { overflow: hidden; }
+.telemetry-panel { padding: 16px !important; }
+.stream-panel > div:first-child {
+  padding: 19px 22px;
+  border-color: var(--line) !important;
+  background: rgba(255,255,255,.018);
 }
-
-/* Pulse animation for live sentinel badge */
-@keyframes sentinel-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.15); }
+.stream-panel > div:first-child h1 { font-size: 15px; letter-spacing: -.015em; }
+.stream-log { padding: 23px clamp(16px, 2vw, 30px) !important; }
+.stream-log > div { max-width: 850px !important; }
+.stream-log > div:first-child { color: #8493aa; letter-spacing: .18em; }
+.stream-log > div.group > div:last-child {
+  padding: 16px 18px;
+  border-radius: 13px;
+  border-color: var(--line) !important;
+  background: rgba(255,255,255,.035) !important;
+  box-shadow: 0 7px 20px rgba(0,0,0,.08);
+  transition: border-color .18s ease, transform .18s ease;
 }
+.stream-log > div.group:hover > div:last-child { border-color: rgba(145,180,215,.25) !important; transform: translateY(-1px); }
+.command-dock {
+  padding: 16px 20px 18px;
+  border-color: var(--line) !important;
+  background: rgba(8,13,24,.88) !important;
+}
+.command-dock form {
+  max-width: 850px !important;
+  min-height: 54px;
+  border-radius: 13px !important;
+  border-color: rgba(151,178,210,.19) !important;
+  background: rgba(255,255,255,.045) !important;
+}
+.command-dock form:focus-within { border-color: rgba(97,226,207,.5) !important; box-shadow: 0 0 0 3px rgba(97,226,207,.08); }
+.telemetry-panel > div { gap: 14px !important; }
+.telemetry-panel [class*="rounded-xl"][class*="border"] {
+  border-color: var(--line) !important;
+  border-radius: 14px !important;
+  background-color: rgba(255,255,255,.035) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08) !important;
+}
+.telemetry-panel table { border-collapse: collapse; }
+.telemetry-panel table tbody tr:last-child { border-bottom: 0; }
+.telemetry-panel table td { padding-top: 12px; padding-bottom: 12px; }
+.sentinel-dashboard button { transition-duration: .18s; }
+.sentinel-dashboard button:focus-visible, .sentinel-dashboard input:focus-visible { outline: 2px solid rgba(97,226,207,.72); outline-offset: 2px; }
 
-.animate-sentinel-pulse {
-  animation: sentinel-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: rgba(8,13,24,.7); }
+::-webkit-scrollbar-thumb { background: rgba(111,133,164,.42); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(143,167,199,.62); }
+
+@media (max-width: 1279px) {
+  .workspace-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .stream-panel, .telemetry-panel { min-height: auto !important; }
+  .stream-panel { min-height: 680px !important; }
+}
+@media (max-width: 640px) {
+  .dashboard-header { height: 66px; padding-inline: 16px; }
+  .preset-bar { padding: 13px 16px; }
+  .preset-bar > div > div:last-child { grid-template-columns: minmax(0, 1fr) !important; }
+  .workspace-grid { padding: 12px; gap: 12px; }
+  .stream-panel { min-height: 610px !important; }
+  .stream-panel > div:first-child { padding: 15px; }
+  .stream-log { padding: 17px 12px !important; }
+  .stream-log > div.group { gap: 8px !important; }
+  .stream-log > div.group > div:first-child { width: 70px !important; font-size: 9px; }
+  .stream-log > div.group > div:last-child { padding: 12px; }
+  .command-dock { padding: 12px; }
+  .telemetry-panel { padding: 12px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

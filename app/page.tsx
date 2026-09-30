@@ -426,11 +426,11 @@ export default function SentinelPayConsole() {
   const capPercent = Math.min(100, Math.round((rollingSpend / 75000) * 100));
 
   return (
-    <main className="min-h-screen bg-[#09090b] text-zinc-100 selection:bg-cyan-400/20 font-sans">
+    <main className="sentinel-dashboard min-h-screen bg-[#09090b] text-zinc-100 selection:bg-cyan-400/20 font-sans">
       {/* ---------------------------------------------------- */}
       {/* 1. Header Bar (Matching v0 console)                  */}
       {/* ---------------------------------------------------- */}
-      <header className="flex h-16 items-center justify-between border-b border-white/[0.07] bg-zinc-950/95 px-5 backdrop-blur sticky top-0 z-40">
+      <header className="dashboard-header flex h-16 items-center justify-between border-b border-white/[0.07] bg-zinc-950/95 px-5 backdrop-blur sticky top-0 z-40">
         <div className="flex items-center gap-3">
           <div className="flex size-8 items-center justify-center rounded-lg bg-cyan-400 text-zinc-950 shadow-[0_0_24px_rgba(34,211,238,0.28)]">
             <Zap className="size-4 fill-current" />
@@ -471,7 +471,7 @@ export default function SentinelPayConsole() {
       {/* ---------------------------------------------------- */}
       {/* 2. Compact Evaluator Preset Ticker                   */}
       {/* ---------------------------------------------------- */}
-      <section className="border-b border-white/[0.07] bg-zinc-950/60 px-5 py-2.5">
+      <section className="preset-bar border-b border-white/[0.07] bg-zinc-950/60 px-5 py-2.5">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 shrink-0">
             <Sparkles className="size-3.5 text-cyan-400" />
@@ -512,12 +512,12 @@ export default function SentinelPayConsole() {
       {/* ---------------------------------------------------- */}
       {/* 3. Main Workspace Split Screen                       */}
       {/* ---------------------------------------------------- */}
-      <div className="grid min-h-[calc(100vh-6.5rem)] grid-cols-1 xl:grid-cols-[3fr_2fr]">
+      <div className="workspace-grid grid min-h-[calc(100vh-6.5rem)] grid-cols-1 xl:grid-cols-[3fr_2fr]">
         
         {/* =================================================== */}
         {/* Left Section: Agent Execution Stream                */}
         {/* =================================================== */}
-        <section className="flex min-h-[calc(100vh-6.5rem)] min-w-0 flex-col border-r border-white/[0.07]">
+        <section className="stream-panel flex min-h-[calc(100vh-6.5rem)] min-w-0 flex-col border-r border-white/[0.07]">
           {/* Stream Header */}
           <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-4">
             <div className="flex items-center gap-3">
@@ -537,7 +537,7 @@ export default function SentinelPayConsole() {
           </div>
 
           {/* Stream Logs */}
-          <div className="flex-1 overflow-auto px-5 py-6">
+          <div className="stream-log flex-1 overflow-auto px-5 py-6">
             <div className="mx-auto flex max-w-3xl flex-col gap-3">
               <div className="mb-2 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-600">
                 <span>Deterministic Interposition Log</span>
@@ -618,7 +618,7 @@ export default function SentinelPayConsole() {
           </div>
 
           {/* Bottom Command Input */}
-          <div className="border-t border-white/[0.07] bg-zinc-950/80 p-4">
+          <div className="command-dock border-t border-white/[0.07] bg-zinc-950/80 p-4">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -653,7 +653,7 @@ export default function SentinelPayConsole() {
         {/* =================================================== */}
         {/* Right Section: Telemetry & Observability Aside      */}
         {/* =================================================== */}
-        <aside className="min-w-0 bg-[#0c0c0f] p-5">
+        <aside className="telemetry-panel min-w-0 bg-[#0c0c0f] p-5">
           <div className="flex flex-col gap-5">
             
             {/* Top Gauges: Burst velocity & Rolling cap */}
