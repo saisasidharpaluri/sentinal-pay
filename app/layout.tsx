@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sentinel-Pay | Autonomous Agent Payment Gateway",
-  description: "Deterministic guardrail engine, real-time velocity limits, and Human-in-the-Loop authorization for autonomous AI agent payments.",
+  title: "Sentinel Pay | Payment controls for autonomous agents",
+  description: "Deterministic guardrails and human approval for autonomous agent payments. Explore the Sentinel Pay interactive test-rail demo.",
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+      <body className="min-h-full flex flex-col font-sans antialiased selection:bg-teal-100 selection:text-teal-950">
         {children}
       </body>
     </html>
