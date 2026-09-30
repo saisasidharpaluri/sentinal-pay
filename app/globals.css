@@ -220,7 +220,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .send-button:disabled { opacity: .4; cursor: not-allowed; }
 .composer-note { display: block; margin-top: 7px; color: #91a0aa; font-size: 8px; }
 .processing-banner { display: flex; align-items: center; gap: 7px; padding: 9px 15px; border-bottom: 1px solid #d9eeea; color: #397d73; background: #f1faf7; font-size: 9px; }
-.activity-content { display: grid; gap: 10px; padding: 13px; }
+.activity-content { display: grid; max-height: 570px; gap: 10px; padding: 13px; overflow-y: auto; scrollbar-width: none; }
+.activity-content::-webkit-scrollbar { display: none; }
 .run-card { padding: 13px; border: 1px solid #e2e9ed; border-left: 3px solid #42a28f; border-radius: 8px; background: #fff; animation: appear .25s ease both; }
 .run-card.pending { border-left-color: #d7a343; }
 .run-card.blocked { border-left-color: #cb6670; }
