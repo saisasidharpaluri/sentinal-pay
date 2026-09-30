@@ -204,6 +204,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .console-main-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, .85fr); align-items: start; gap: 13px; margin-top: 15px; }
 .console-side-column { display: grid; gap: 13px; }
 .workspace-card { min-width: 0; border: 1px solid #e1e8ed; border-radius: 10px; background: white; box-shadow: 0 2px 5px rgba(21,51,73,.025); }
+.execution-panel { display: flex; height: min(760px, calc(100vh - 170px)); min-height: 460px; flex-direction: column; overflow: hidden; }
 .panel-header { display: flex; min-height: 59px; align-items: center; gap: 10px; padding: 11px 15px; border-bottom: 1px solid #edf1f4; }
 .panel-title-icon { display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center; border-radius: 8px; color: #297c7a; background: #e9f6f3; }
 .panel-title-icon.amber { color: #a7772a; background: #fcf2de; }
@@ -220,7 +221,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .send-button:disabled { opacity: .4; cursor: not-allowed; }
 .composer-note { display: block; margin-top: 7px; color: #91a0aa; font-size: 8px; }
 .processing-banner { display: flex; align-items: center; gap: 7px; padding: 9px 15px; border-bottom: 1px solid #d9eeea; color: #397d73; background: #f1faf7; font-size: 9px; }
-.activity-content { display: grid; max-height: 570px; gap: 10px; padding: 13px; overflow-y: auto; scrollbar-width: none; }
+.activity-content { display: grid; min-height: 0; flex: 1 1 auto; gap: 10px; padding: 13px; overflow-y: auto; scrollbar-width: none; }
 .activity-content::-webkit-scrollbar { display: none; }
 .run-card { padding: 13px; border: 1px solid #e2e9ed; border-left: 3px solid #42a28f; border-radius: 8px; background: #fff; animation: appear .25s ease both; }
 .run-card.pending { border-left-color: #d7a343; }
@@ -390,6 +391,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
   .scenario-hint { display: none; }
   .console-main-grid { grid-template-columns: 1fr; gap: 11px; margin-top: 12px; }
   .console-side-column { grid-template-columns: 1fr; gap: 11px; }
+  .execution-panel { height: min(660px, 72vh); min-height: 420px; }
   .ledger-panel { margin-top: 11px; }
   .console-footer { flex-wrap: wrap; gap: 9px 15px; line-height: 1.5; }
   .console-footer a { margin-left: 0; }
